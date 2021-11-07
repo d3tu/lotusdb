@@ -1,6 +1,6 @@
 {
   "name": "lotusdb",
-  "version": "3.0.4",
+  "version": "3.0.5",
   "description": "Database using local file stream.",
   "main": "index.js",
   "types": "index.ts",
