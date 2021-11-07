@@ -3,16 +3,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Database = void 0;
 const fs = require("fs");
 const rl = require("readline");
-;
 class Database {
-    constructor(path = 'db', options) {
+    constructor(path = 'db') {
         this._queue = [];
         this._running = false;
         this._reader = null;
         this._writer = null;
-        this._waiter = false;
         this._path = path;
-        this._waiter = options.wait;
         try {
             fs.statSync(this._path);
         }
@@ -50,23 +47,17 @@ class Database {
             this._writer = fs.createWriteStream(this._path + '.tmp');
         this._reader = rl.createInterface(fs.createReadStream(this._path));
         (_a = this._reader) === null || _a === void 0 ? void 0 : _a.on('line', (line) => {
-            var _a, _b, _c;
-            this._waiter && ((_a = this._reader) === null || _a === void 0 ? void 0 : _a.pause());
-            let json;
-            try {
-                json = JSON.parse(line);
-            }
-            catch (_) { }
+            var _a;
+            const json = JSON.parse(line);
             for (let i = 0; i < this._queue.length; i++) {
                 const q = this._queue[i];
                 if (q.init) {
-                    if (q.type === 'read' && q.fn(json || line))
-                        this._queue.splice(i, 1)[0].res(json || line);
-                    else if (q.type === 'write' && !q.fn(json || line))
-                        (_b = this._writer) === null || _b === void 0 ? void 0 : _b.write(line + '\n');
+                    if (q.type === 'read' && q.fn(json))
+                        this._queue.splice(i, 1)[0].res(json);
+                    else if (q.type === 'write' && !q.fn(json))
+                        (_a = this._writer) === null || _a === void 0 ? void 0 : _a.write(line + '\n');
                 }
             }
-            this._waiter && ((_c = this._reader) === null || _c === void 0 ? void 0 : _c.resume());
         });
         (_b = this._reader) === null || _b === void 0 ? void 0 : _b.once('close', () => {
             var _a;
@@ -88,7 +79,8 @@ class Database {
                     q.init = true;
             }
             this._running = false;
-            this._queue.length && this._runner();
+            if (this._queue.length)
+                this._runner();
         });
     }
 }
