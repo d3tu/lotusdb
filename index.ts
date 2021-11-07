@@ -59,7 +59,10 @@ export class Database {
       if (this._writer) {
         this._writer?.close();
         this._writer = null;
-        fs.renameSync(this._path + '.tmp', this._path);
+        try {
+          fs.statSync(this._path + '.tmp');
+          fs.renameSync(this._path + '.tmp', this._path);
+        } catch(_) {}
       }
       for (let i = 0; i < this._queue.length; i++) {
         const q = this._queue[i];
