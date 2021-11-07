@@ -4,7 +4,7 @@ exports.Database = void 0;
 const fs = require("fs");
 const rl = require("readline");
 class Database {
-    constructor(path = 'db') {
+    constructor(path = 'data.db') {
         this._queue = [];
         this._running = false;
         this._reader = null;
@@ -79,8 +79,7 @@ class Database {
                     q.init = true;
             }
             this._running = false;
-            if (this._queue.length)
-                this._runner();
+            this._queue.length && this._runner();
         });
     }
 }

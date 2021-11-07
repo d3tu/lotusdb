@@ -7,7 +7,7 @@ export class Database {
   private _running = false;
   private _reader: rl.ReadLine | null = null;
   private _writer: fs.WriteStream | null = null;
-  constructor(path: string = 'db') {
+  constructor(path: string = 'data.db') {
     this._path = path;
     try {
       fs.statSync(this._path);
